@@ -1,0 +1,237 @@
+
+name: PCVR
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validar:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Verificar arquivos
+        shell: pwsh
+        run: |
+          $arquivos = @(
+            "README.md",
+            "BUILD.md",
+            "LICENSE",
+            "scripts/Test-Host.ps1",
+            "scripts/Install-Components.ps1",
+            "scripts/Test-Network.ps1"
+          )
+
+          foreach ($arquivo in $arquivos) {
+            if (-not (Test-Path $arquivo)) {
+              throw "Arquivo não encontrado: $arquivo"
+            }
+          }
+
+          Write-Host "Arquivos verificados com sucesso!"
+# PC Virtual na Nuvem (Windows + jogos)
+
+Projeto-base para preparar um host Windows para streaming remoto de jogos usando **Sunshine + Moonlight**, com **Tailscale** para uma conexão privada entre o host e o Android.
+
+> **Importante:** este repositório não cria uma VM em um provedor de nuvem. Você precisa contratar/configurar uma máquina Windows com GPU compatível, armazenamento e rede. Custos, disponibilidade de GPU e licença do Windows dependem do provedor.
+
+## Recursos
+
+- Verificação de sistema, memória, GPU, armazenamento e ferramentas.
+- Instalação assistida do Sunshine e Tailscale via `winget`.
+- Verificação de conectividade básica.
+- Configuração de exemplo para perfil de 8 GB de RAM.
+- Guia para jogar remotamente pelo Android.
+
+## Arquitetura
+
+```text
+Galaxy A17 4G (Moonlight)
+          |
+          | rede privada Tailscale
+          |
+Windows 11 VM/PC (Sunshine + GPU)
+          |
+       Jogos PC
+```
+
+## Requisitos
+
+- Windows 11 64-bit em uma máquina física ou VM.
+- GPU compatível com codificação de vídeo e com os jogos pretendidos.
+- Conta de usuário com privilégios de administrador para instalar os componentes.
+- Internet estável nos dois lados; latência baixa é importante para jogos.
+- Tailscale instalado no host e no Android, autenticados na mesma tailnet.
+- Moonlight instalado no Android.
+- Licença válida do Windows e autorização para uso conforme os termos do provedor.
+
+**Memória:** 8 GB é o perfil solicitado, mas pode limitar jogos atuais. 16 GB ou mais é preferível. A VM também precisa de CPU, GPU e armazenamento suficientes.
+
+## Instalação rápida no host Windows
+
+1. Baixe/clon​e este repositório no host Windows.
+2. Abra o PowerShell **como administrador** na pasta do projeto.
+3. Execute:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\scripts\Test-Host.ps1
+.\scripts\Install-Components.ps1
+```
+
+Os scripts usam `winget` e podem pedir confirmação. Revise o conteúdo antes de executar qualquer script administrativo.
+
+## Conectar o Android
+
+1. Instale Tailscale no Windows e no Galaxy A17 4G.
+2. Entre na mesma conta/rede privada Tailscale em ambos.
+3. Instale Moonlight no Android.
+4. Abra Sunshine no host e conclua a configuração inicial local.
+5. No Moonlight, adicione o endereço Tailscale do host e conclua o pareamento exibido pelo Sunshine.
+
+Links oficiais:
+- Sunshine: https://github.com/LizardByte/Sunshine
+- Moonlight Android: https://play.google.com/store/apps/details?id=com.limelight
+- Tailscale: https://tailscale.com/download
+
+## Segurança
+
+- **Não** encaminhe portas do Sunshine diretamente para a internet.
+- Use uma rede privada (por exemplo, Tailscale) e senhas fortes.
+- Nunca coloque senhas, tokens, chaves privadas ou arquivos `.env` no GitHub.
+- Não execute scripts que não tenha revisado, especialmente como administrador.
+- Use apenas imagens de sistema e licenças obtidas legalmente.
+
+## Limitações conhecidas
+
+- O repositório não cria conta, não contrata instâncias, não configura faturamento e não provisiona GPU automaticamente.
+- O nome “PC virtual” não significa que o GitHub hospede o computador.
+- Desempenho depende do hardware da VM, codec, rede, resolução e jogo.
+- Algumas VMs em nuvem não oferecem GPU, codificação de vídeo ou acesso de console adequado.
+
+## Estrutura
+
+```text
+pc-virtual-nuvem/
+├── README.md
+├── BUILD.md
+├── LICENSE
+├── .gitignore
+├── config/
+│   └── profile-8gb.example.json
+├── scripts/
+│   ├── Test-Host.ps1
+│   ├── Install-Components.ps1
+│   └── Test-Network.ps1
+└── .github/
+    └── workflows/
+        └── validate.yml
+```
+
+## Licença
+
+MIT. Consulte `LICENSE`.# PC Virtual na Nuvem (Windows + jogos)
+
+Projeto-base para preparar um host Windows para streaming remoto de jogos usando **Sunshine + Moonlight**, com **Tailscale** para uma conexão privada entre o host e o Android.
+
+> **Importante:** este repositório não cria uma VM em um provedor de nuvem. Você precisa contratar/configurar uma máquina Windows com GPU compatível, armazenamento e rede. Custos, disponibilidade de GPU e licença do Windows dependem do provedor.
+
+## Recursos
+
+- Verificação de sistema, memória, GPU, armazenamento e ferramentas.
+- Instalação assistida do Sunshine e Tailscale via `winget`.
+- Verificação de conectividade básica.
+- Configuração de exemplo para perfil de 8 GB de RAM.
+- Guia para jogar remotamente pelo Android.
+
+## Arquitetura
+
+```text
+Galaxy A17 4G (Moonlight)
+          |
+          | rede privada Tailscale
+          |
+Windows 11 VM/PC (Sunshine + GPU)
+          |
+       Jogos PC
+```
+
+## Requisitos
+
+- Windows 11 64-bit em uma máquina física ou VM.
+- GPU compatível com codificação de vídeo e com os jogos pretendidos.
+- Conta de usuário com privilégios de administrador para instalar os componentes.
+- Internet estável nos dois lados; latência baixa é importante para jogos.
+- Tailscale instalado no host e no Android, autenticados na mesma tailnet.
+- Moonlight instalado no Android.
+- Licença válida do Windows e autorização para uso conforme os termos do provedor.
+
+**Memória:** 8 GB é o perfil solicitado, mas pode limitar jogos atuais. 16 GB ou mais é preferível. A VM também precisa de CPU, GPU e armazenamento suficientes.
+
+## Instalação rápida no host Windows
+
+1. Baixe/clon​e este repositório no host Windows.
+2. Abra o PowerShell **como administrador** na pasta do projeto.
+3. Execute:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\scripts\Test-Host.ps1
+.\scripts\Install-Components.ps1
+```
+
+Os scripts usam `winget` e podem pedir confirmação. Revise o conteúdo antes de executar qualquer script administrativo.
+
+## Conectar o Android
+
+1. Instale Tailscale no Windows e no Galaxy A17 4G.
+2. Entre na mesma conta/rede privada Tailscale em ambos.
+3. Instale Moonlight no Android.
+4. Abra Sunshine no host e conclua a configuração inicial local.
+5. No Moonlight, adicione o endereço Tailscale do host e conclua o pareamento exibido pelo Sunshine.
+
+Links oficiais:
+- Sunshine: https://github.com/LizardByte/Sunshine
+- Moonlight Android: https://play.google.com/store/apps/details?id=com.limelight
+- Tailscale: https://tailscale.com/download
+
+## Segurança
+
+- **Não** encaminhe portas do Sunshine diretamente para a internet.
+- Use uma rede privada (por exemplo, Tailscale) e senhas fortes.
+- Nunca coloque senhas, tokens, chaves privadas ou arquivos `.env` no GitHub.
+- Não execute scripts que não tenha revisado, especialmente como administrador.
+- Use apenas imagens de sistema e licenças obtidas legalmente.
+
+## Limitações conhecidas
+
+- O repositório não cria conta, não contrata instâncias, não configura faturamento e não provisiona GPU automaticamente.
+- O nome “PC virtual” não significa que o GitHub hospede o computador.
+- Desempenho depende do hardware da VM, codec, rede, resolução e jogo.
+- Algumas VMs em nuvem não oferecem GPU, codificação de vídeo ou acesso de console adequado.
+
+## Estrutura
+
+```text
+pc-virtual-nuvem/
+├── README.md
+├── BUILD.md
+├── LICENSE
+├── .gitignore
+├── config/
+│   └── profile-8gb.example.json
+├── scripts/
+│   ├── Test-Host.ps1
+│   ├── Install-Components.ps1
+│   └── Test-Network.ps1
+└── .github/
+    └── workflows/
+        └── validate.yml
+```
+
+## Licença
+
+MIT. Consulte `LICENSE`.
